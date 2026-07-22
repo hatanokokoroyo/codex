@@ -8,6 +8,16 @@ use std::collections::HashMap;
 use std::time::Duration;
 use url::Url;
 
+/// Wire-level APIs supported by a `Provider`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum WireApi {
+    /// The Responses API exposed by OpenAI at `/v1/responses`.
+    Responses,
+
+    /// Regular Chat Completions compatible with `/v1/chat/completions`.
+    Chat,
+}
+
 /// High-level retry configuration for a provider.
 ///
 /// This is converted into a `RetryPolicy` used by `codex-client` to drive
@@ -44,6 +54,7 @@ pub struct Provider {
     pub name: String,
     pub base_url: String,
     pub query_params: Option<HashMap<String, String>>,
+    pub wire: WireApi,
     pub headers: HeaderMap,
     pub retry: RetryConfig,
     pub stream_idle_timeout: Duration,

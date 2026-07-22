@@ -104,7 +104,15 @@ pub trait ModelProvider: fmt::Debug + Send + Sync {
 
     /// Returns the provider-owned capability upper bounds.
     fn capabilities(&self) -> ProviderCapabilities {
-        ProviderCapabilities::default()
+        if self.info().wire_api == codex_model_provider_info::WireApi::Chat {
+            ProviderCapabilities {
+                namespace_tools: false,
+                image_generation: false,
+                web_search: false,
+            }
+        } else {
+            ProviderCapabilities::default()
+        }
     }
 
     /// Returns the preferred model used for automatic approval review.

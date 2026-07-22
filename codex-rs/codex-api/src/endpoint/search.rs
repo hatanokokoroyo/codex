@@ -2,6 +2,7 @@ use crate::auth::SharedAuthProvider;
 use crate::endpoint::session::EndpointSession;
 use crate::error::ApiError;
 use crate::provider::Provider;
+use crate::provider::WireApi;
 use crate::search::SearchRequest;
 use crate::search::SearchResponse;
 use codex_client::HttpTransport;
@@ -121,6 +122,7 @@ mod tests {
             name: "test".to_string(),
             base_url: "https://example.com/v1".to_string(),
             query_params: None,
+            wire: WireApi::Responses,
             headers: HeaderMap::new(),
             retry: RetryConfig {
                 max_attempts: 1,

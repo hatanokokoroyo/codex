@@ -12,6 +12,7 @@ use codex_api::RealtimeSessionConfig;
 use codex_api::RealtimeSessionMode;
 use codex_api::RealtimeWebsocketClient;
 use codex_api::RetryConfig;
+use codex_api::WireApi;
 use codex_protocol::protocol::RealtimeHandoffRequested;
 use codex_protocol::protocol::RealtimeTranscriptDelta;
 use codex_protocol::protocol::RealtimeTranscriptDone;
@@ -62,6 +63,7 @@ fn test_provider(base_url: String) -> Provider {
         name: "test".to_string(),
         base_url,
         query_params: Some(HashMap::new()),
+        wire: WireApi::Responses,
         headers: HeaderMap::new(),
         retry: RetryConfig {
             max_attempts: 1,

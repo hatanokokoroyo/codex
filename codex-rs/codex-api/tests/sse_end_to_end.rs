@@ -9,6 +9,7 @@ use codex_api::Compression;
 use codex_api::Provider;
 use codex_api::ResponseEvent;
 use codex_api::ResponsesClient;
+use codex_api::WireApi;
 use codex_client::HttpTransport;
 use codex_client::Request;
 use codex_client::Response;
@@ -61,6 +62,7 @@ fn provider(name: &str) -> Provider {
         name: name.to_string(),
         base_url: "https://example.com/v1".to_string(),
         query_params: None,
+        wire: WireApi::Responses,
         headers: HeaderMap::new(),
         retry: codex_api::RetryConfig {
             max_attempts: 1,
