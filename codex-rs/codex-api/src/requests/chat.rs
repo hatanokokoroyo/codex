@@ -184,6 +184,25 @@ impl<'a> ChatRequestBuilder<'a> {
                         last_assistant_text = Some(text.clone());
                     }
 
+                    // If this assistant message appears right after a
+                    // tool_calls message (before its tool responses) but has
+                    // actual text content, merge the text into the existing
+                    // tool_calls message instead of creating a separate one.
+                    // If the text is empty, just skip it entirely.
+                    if role == "assistant"
+                        && messages.last().is_some_and(|m| {
+                            m.get("tool_calls").is_some()
+                        })
+                    {
+                        if text.trim().is_empty() {
+                            continue;
+                        }
+                        if let Some(obj) = messages.last_mut().and_then(|m| m.as_object_mut()) {
+                            obj.insert("content".to_string(), json!(text));
+                            continue;
+                        }
+                    }
+
                     let content_value = if role == "assistant" {
                         json!(text)
                     } else if saw_image {
@@ -224,18 +243,19 @@ impl<'a> ChatRequestBuilder<'a> {
                     push_tool_call_message(&mut messages, tool_call, reasoning);
                 }
                 ResponseItem::LocalShellCall {
-                    id,
-                    call_id: _,
-                    status,
+                    call_id,
+                    status: _,
                     action,
                     ..
                 } => {
                     let reasoning = reasoning_by_anchor_index.get(&idx).map(String::as_str);
                     let tool_call = json!({
-                        "id": id.clone().map(|i| i.to_string()).unwrap_or_default(),
-                        "type": "local_shell_call",
-                        "status": status,
-                        "action": action,
+                        "id": call_id.clone().unwrap_or_default(),
+                        "type": "function",
+                        "function": {
+                            "name": "shell",
+                            "arguments": serde_json::to_value(&action).unwrap_or_default(),
+                        }
                     });
                     push_tool_call_message(&mut messages, tool_call, reasoning);
                 }
@@ -272,19 +292,17 @@ impl<'a> ChatRequestBuilder<'a> {
                     }));
                 }
                 ResponseItem::CustomToolCall {
-                    id,
-                    call_id: _,
+                    call_id,
                     name,
                     input,
-                    status: _,
                     ..
                 } => {
                     let tool_call = json!({
-                        "id": id,
-                        "type": "custom",
-                        "custom": {
+                        "id": call_id,
+                        "type": "function",
+                        "function": {
                             "name": name,
-                            "input": input,
+                            "arguments": input,
                         }
                     });
                     let reasoning = reasoning_by_anchor_index.get(&idx).map(String::as_str);
