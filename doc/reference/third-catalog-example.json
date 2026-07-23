@@ -1,0 +1,168 @@
+{
+  "models": [
+    {
+      "slug": "deepseek-v4-flash",
+      "display_name": "DeepSeek V4 Flash",
+      "description": "Fast and affordable AI-powered coding from DeepSeek.",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 50,
+      "shell_type": "shell_command",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": true,
+      "support_verbosity": false,
+      "base_instructions": "You are Codex, an AI coding assistant powered by DeepSeek V4 Flash.",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "context_window": 65536,
+      "max_context_window": 65536,
+      "use_responses_lite": false,
+      "input_modalities": [
+        "text"
+      ],
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning"
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth for everyday tasks"
+        },
+        {
+          "effort": "high",
+          "description": "Greater reasoning depth for complex problems"
+        }
+      ],
+      "default_reasoning_level": "medium",
+      "experimental_supported_tools": []
+    },
+    {
+      "slug": "deepseek-v4-pro",
+      "display_name": "DeepSeek V4 Pro",
+      "description": "Advanced reasoning AI-powered coding from DeepSeek.",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 51,
+      "shell_type": "shell_command",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": true,
+      "support_verbosity": false,
+      "base_instructions": "You are Codex, an AI coding assistant powered by DeepSeek V4 Pro.",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "context_window": 65536,
+      "max_context_window": 65536,
+      "use_responses_lite": false,
+      "input_modalities": [
+        "text"
+      ],
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning"
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth for everyday tasks"
+        },
+        {
+          "effort": "high",
+          "description": "Greater reasoning depth for complex problems"
+        }
+      ],
+      "default_reasoning_level": "medium",
+      "experimental_supported_tools": []
+    },
+    {
+      "slug": "mimo-v2.5",
+      "display_name": "Mimo 2.5",
+      "description": "Native full-modal perception model from Xiaomi. Supports text, image, video, and audio understanding with 1M long context.",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 80,
+      "shell_type": "shell_command",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": true,
+      "support_verbosity": false,
+      "base_instructions": "You are Codex, an AI coding assistant powered by Xiaomi Mimo 2.5.",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "context_window": 1048576,
+      "max_context_window": 1048576,
+      "use_responses_lite": false,
+      "input_modalities": [
+        "text",
+        "image",
+        "audio"
+      ],
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning"
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth for everyday tasks"
+        },
+        {
+          "effort": "high",
+          "description": "Greater reasoning depth for complex problems"
+        }
+      ],
+      "default_reasoning_level": "medium",
+      "experimental_supported_tools": []
+    },
+    {
+      "slug": "mimo-v2.5-pro",
+      "display_name": "Mimo 2.5 Pro",
+      "description": "Trillion-parameter flagship model from Xiaomi. Excels at long-horizon agent tasks with stable tool calling across hundreds of rounds.",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 70,
+      "shell_type": "shell_command",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": true,
+      "support_verbosity": false,
+      "base_instructions": "You are Codex, an AI coding assistant powered by Xiaomi Mimo 2.5 Pro.",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "context_window": 1048576,
+      "max_context_window": 1048576,
+      "use_responses_lite": false,
+      "input_modalities": [
+        "text",
+        "image",
+        "audio"
+      ],
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning"
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth for everyday tasks"
+        },
+        {
+          "effort": "high",
+          "description": "Greater reasoning depth for complex problems"
+        }
+      ],
+      "default_reasoning_level": "medium",
+      "experimental_supported_tools": []
+    }
+  ]
+}
