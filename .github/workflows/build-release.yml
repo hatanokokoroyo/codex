@@ -1,0 +1,39 @@
+name: Build Release Binary (Linux x86_64)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build - x86_64-unknown-linux-gnu (release)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: codex-rs
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            --no-install-recommends pkg-config libcap-dev
+
+      - uses: dtolnay/rust-toolchain@1.95.0
+
+      - name: Configure rusty_v8 artifact overrides
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Cargo build (release)
+        run: cargo build --target x86_64-unknown-linux-gnu --release
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-x86_64-linux
+          path: codex-rs/target/x86_64-unknown-linux-gnu/release/codex
+          if-no-files-found: error
