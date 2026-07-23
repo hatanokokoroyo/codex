@@ -7,6 +7,7 @@ use crate::tools::registry::CoreToolRuntime;
 use crate::tools::registry::ToolExecutor;
 use codex_tools::ToolName;
 use codex_tools::ToolSpec;
+use serde_json::Value as JsonValue;
 
 use super::ExecContext;
 use super::PUBLIC_TOOL_NAME;
@@ -106,6 +107,33 @@ impl ToolExecutor<ToolInvocation> for CodeModeExecuteHandler {
     }
 }
 
+/// Extracts the JavaScript source code from the payload. The exec tool is
+/// registered as either a Freeform (`ToolPayload::Custom`) or Function
+/// (`ToolPayload::Function` with a `code` string field) tool depending on the
+/// wire API.
+fn extract_code_from_payload(
+    payload: &ToolPayload,
+    tool_name: &ToolName,
+) -> Result<String, FunctionCallError> {
+    match payload {
+        ToolPayload::Custom { input } if is_exec_tool_name(tool_name) => Ok(input.clone()),
+        ToolPayload::Function { arguments } if is_exec_tool_name(tool_name) => {
+            let parsed: JsonValue = serde_json::from_str(arguments).map_err(|err| {
+                FunctionCallError::RespondToModel(format!("failed to parse exec arguments: {err}"))
+            })?;
+            match parsed.get("code").and_then(JsonValue::as_str) {
+                Some(code) => Ok(code.to_string()),
+                None => Err(FunctionCallError::RespondToModel(
+                    "exec function call requires a \"code\" string parameter".to_string(),
+                )),
+            }
+        }
+        _ => Err(FunctionCallError::RespondToModel(format!(
+            "{PUBLIC_TOOL_NAME} expects raw JavaScript source text"
+        ))),
+    }
+}
+
 impl CodeModeExecuteHandler {
     async fn handle_call(
         &self,
@@ -120,20 +148,18 @@ impl CodeModeExecuteHandler {
             ..
         } = invocation;
 
-        match payload {
-            ToolPayload::Custom { input } if is_exec_tool_name(&tool_name) => self
-                .execute(session, turn, call_id, input)
-                .await
-                .map(boxed_tool_output),
-            _ => Err(FunctionCallError::RespondToModel(format!(
-                "{PUBLIC_TOOL_NAME} expects raw JavaScript source text"
-            ))),
-        }
+        let code = extract_code_from_payload(&payload, &tool_name)?;
+        self.execute(session, turn, call_id, code)
+            .await
+            .map(boxed_tool_output)
     }
 }
 
 impl CoreToolRuntime for CodeModeExecuteHandler {
     fn matches_kind(&self, payload: &ToolPayload) -> bool {
-        matches!(payload, ToolPayload::Custom { .. })
+        matches!(
+            payload,
+            ToolPayload::Custom { .. } | ToolPayload::Function { .. }
+        )
     }
 }

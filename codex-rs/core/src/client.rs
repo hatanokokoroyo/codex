@@ -1445,12 +1445,9 @@ impl ModelClientSession {
             .build(&client_setup.api_provider)
             .map_err(codex_api::map_api_error)?;
 
-            let client = ApiChatClient::new(
-                transport,
-                client_setup.api_provider,
-                client_setup.api_auth,
-            )
-            .with_telemetry(Some(request_telemetry), Some(sse_telemetry));
+            let client =
+                ApiChatClient::new(transport, client_setup.api_provider, client_setup.api_auth)
+                    .with_telemetry(Some(request_telemetry), Some(sse_telemetry));
 
             let stream_result = client.stream_request(chat_request).await;
 

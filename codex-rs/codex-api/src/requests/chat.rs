@@ -190,9 +190,9 @@ impl<'a> ChatRequestBuilder<'a> {
                     // tool_calls message instead of creating a separate one.
                     // If the text is empty, just skip it entirely.
                     if role == "assistant"
-                        && messages.last().is_some_and(|m| {
-                            m.get("tool_calls").is_some()
-                        })
+                        && messages
+                            .last()
+                            .is_some_and(|m| m.get("tool_calls").is_some())
                     {
                         if text.trim().is_empty() {
                             continue;

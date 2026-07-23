@@ -485,6 +485,7 @@ fn build_code_mode_executors(
                 &namespace_descriptions,
                 default_exec_yield_time_ms,
                 tool_mode == ToolMode::CodeModeOnly,
+                turn_context.provider.info().wire_api,
             ),
             code_mode_nested_tool_specs,
         )),
