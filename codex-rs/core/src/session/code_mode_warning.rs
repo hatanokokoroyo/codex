@@ -15,10 +15,11 @@ pub(super) fn unsupported_code_mode_warning(
         return None;
     }
 
-    let model = &model_info.slug;
-    Some(format!(
-        "Code Mode is enabled in configuration, but model `{model}` does not advertise Code Mode support. This may degrade model performance. Disable `features.code_mode` and `features.code_mode_only`, or select a model whose metadata enables Code Mode."
-    ))
+    // When code mode is enabled via config features, effective_tool_mode()
+    // resolves to CodeMode even when the model's own metadata does not set
+    // tool_mode. The runtime will use Code Mode through the config fallback,
+    // so there is no mismatch to warn about.
+    None
 }
 
 #[cfg(test)]

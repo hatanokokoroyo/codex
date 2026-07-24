@@ -1,4 +1,5 @@
 use super::*;
+use codex_model_provider_info::WireApi;
 use codex_tools::ToolName;
 use pretty_assertions::assert_eq;
 
@@ -47,11 +48,13 @@ fn create_code_mode_tool_chat_api_returns_function() {
     assert!(matches!(spec, ToolSpec::Function(_)));
     assert_eq!(spec.name(), "exec");
 
-    // Verify the function has a "code" parameter.
+    // Verify the function has a "code" parameter with correct schema.
     if let ToolSpec::Function(ref tool) = spec {
         let params = &tool.parameters;
-        assert!(params.get("properties").is_some());
-        assert!(params["properties"].get("code").is_some());
+        assert!(params.properties.is_some());
+        let props = params.properties.as_ref().unwrap();
+        assert!(props.contains_key("code"));
+        assert_eq!(params.required, Some(vec!["code".to_string()]));
     } else {
         panic!("expected Function spec");
     }

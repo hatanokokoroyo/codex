@@ -15,25 +15,30 @@ fn known_model_info() -> ModelInfo {
     }
 }
 
+/// When code mode is enabled via config features, effective_tool_mode()
+/// resolves to CodeMode even when the model's own metadata does not set
+/// tool_mode. The runtime will use Code Mode through the config fallback,
+/// so there is no mismatch to warn about.
 #[test]
-fn warns_when_code_mode_is_enabled_without_model_selector() {
+fn no_warning_when_code_mode_enabled_without_model_selector() {
     let mut features = Features::with_defaults();
     features.enable(Feature::CodeMode);
 
     assert_eq!(
         unsupported_code_mode_warning(&known_model_info(), &features),
-        Some(format!(
-            "Code Mode is enabled in configuration, but model `{MODEL_SLUG}` does not advertise Code Mode support. This may degrade model performance. Disable `features.code_mode` and `features.code_mode_only`, or select a model whose metadata enables Code Mode."
-        ))
+        None
     );
 }
 
 #[test]
-fn warns_when_code_mode_only_is_enabled_without_model_selector() {
+fn no_warning_when_code_mode_only_enabled_without_model_selector() {
     let mut features = Features::with_defaults();
     features.enable(Feature::CodeModeOnly);
 
-    assert!(unsupported_code_mode_warning(&known_model_info(), &features).is_some());
+    assert_eq!(
+        unsupported_code_mode_warning(&known_model_info(), &features),
+        None
+    );
 }
 
 #[test]

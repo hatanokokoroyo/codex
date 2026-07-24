@@ -2,9 +2,9 @@ use codex_code_mode::ToolDefinition as CodeModeToolDefinition;
 use codex_model_provider_info::WireApi;
 use codex_tools::FreeformTool;
 use codex_tools::FreeformToolFormat;
+use codex_tools::JsonSchema;
 use codex_tools::ResponsesApiTool;
 use codex_tools::ToolSpec;
-use serde_json::json;
 use std::collections::BTreeMap;
 
 /// Builds the `exec` tool definition. For Chat Completions API providers
@@ -31,22 +31,27 @@ pub(crate) fn create_code_mode_tool(
         // Chat Completions API does not support Freeform/custom tool types.
         // Wrap the exec tool as a standard function with a single `code` string
         // parameter so that the model can invoke it via normal function calling.
+        let mut code_properties = BTreeMap::new();
+        code_properties.insert(
+            "code".to_string(),
+            JsonSchema {
+                schema_type: Some(codex_tools::JsonSchemaType::Single(
+                    codex_tools::JsonSchemaPrimitiveType::String,
+                )),
+                description: Some("JavaScript source code to execute in a V8 isolate. All nested tools are available on the global `tools` object (e.g. `await tools.exec_command(...)`). You may optionally start with a first-line pragma like `// @exec: {\"yield_time_ms\": 10000, \"max_output_tokens\": 1000}`.".to_string()),
+                ..Default::default()
+            },
+        );
         return ToolSpec::Function(ResponsesApiTool {
             name: codex_code_mode::PUBLIC_TOOL_NAME.to_string(),
             description,
             strict: false,
             defer_loading: None,
-            parameters: json!({
-                "type": "object",
-                "properties": {
-                    "code": {
-                        "type": "string",
-                        "description": "JavaScript source code to execute in a V8 isolate. All nested tools are available on the global `tools` object (e.g. `await tools.exec_command(...)`). You may optionally start with a first-line pragma like `// @exec: {\"yield_time_ms\": 10000, \"max_output_tokens\": 1000}`."
-                    }
-                },
-                "required": ["code"],
-                "additionalProperties": false
-            }),
+            parameters: JsonSchema::object(
+                code_properties,
+                Some(vec!["code".to_string()]),
+                Some(codex_tools::AdditionalProperties::Boolean(false)),
+            ),
             output_schema: None,
         });
     }

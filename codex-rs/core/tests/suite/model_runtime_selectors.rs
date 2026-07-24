@@ -219,13 +219,15 @@ async fn remote_tool_mode_selector_overrides_feature_flags() -> Result<()> {
             .iter()
             .any(|name| name == codex_code_mode::PUBLIC_TOOL_NAME)
     );
+    // No warning expected: when code mode is enabled via config features,
+    // effective_tool_mode() resolves to CodeMode even without tool_mode set.
     assert_eq!(
         unsupported_response
             .warnings
             .iter()
             .filter(|warning| warning.contains(UNSUPPORTED_CODE_MODE_WARNING))
             .count(),
-        1
+        0
     );
 
     Ok(())
@@ -314,7 +316,9 @@ async fn unsupported_code_mode_warning_is_emitted_each_turn() -> Result<()> {
         warning_counts.push(warning_count);
     }
 
-    assert_eq!(warning_counts, vec![1, 1]);
+    // No warnings expected: when code mode is enabled via config features,
+    // effective_tool_mode() resolves to CodeMode even without tool_mode set.
+    assert_eq!(warning_counts, vec![0, 0]);
     assert_eq!(response_mock.requests().len(), 2);
 
     Ok(())
